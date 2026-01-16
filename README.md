@@ -100,3 +100,40 @@ Sur une distrib de la famille RedHat :
 
 
 ## Post Mortem
+
+Avec ``` last -x reboot shutdown``` on peut voir si l'heure exacte du reboot et si c'était une extinction propre "shutdown" ou un plantage "crash"
+Checker les journaux du boot précédent ```journalctl -b -1``` et si on veut uniquement les messages d'erreur critque ont peut utilsier ```journalctl -b -1 err..alert``` 
+
+
+## On surveille...
+
+* Savoir si le service est lancé au démarrage automatiquement : ```systemctl is-enabled bidule```
+* Savoir s'il est en cours de fonctionnement : ```systemctl status bidule```
+* Faire en sorte qu'il le soit : ```sudo systemctl enable bidule```
+* Examiner les messages qu'il émet : ```journalctl -u bidule```
+* Le redémarrer : ```sudo systemctl restart bidule```
+* Déterminer de quel paquet (Debian ou Red Hat) il provient : sur Debian/Ubuntu ; ```dpkg -S $(systemctl show -p FragmentPath bidule | cut -d= -f2)```, sur RedHat/Fedora ; ```rpm -qf $(systemctl show -p FragmentPath bidule | cut -d= -f2)```
+
+
+## Zut
+
+Il faudra passer directement par le menu GRUB et modifier temporairement la ligne de boot pour modifier voir retirer le MdP root et ainsi reprendre le contrôle total du système
+
+
+## C'est la faute à Rémy (sans famille)
+
+* Vérifier si le service il tourne ; ```systemctl status apache2/nginx``` pour verifier si le service est démarré ou arrêté, les erreurs de lancement,le PID actif et les dernières lignes de logs
+* Vérifier si le service écoute sur le bon port ; ```ss -ltnp | grep -E ':(80|443)'``` pour vérifier si les ports de 80 à 443 sont ouverts, les adresses d'écoute et le processus associé
+* Verifier la configuration du service ; ```apachectl configtest``` pour apache, ```nginx -t``` pour nginx pour vérifier les erreurs de syntaxe, les fichiers inclus manquants et les certificats mal référencés
+* Vérifier les logs ; ```journalctl -u apache2/nginx```
+* Vérifier le pare-feu ; ```firewall-cmd --list-all```
+* Vérifier la connectivité locale ; ```curl -v http://127.0.0.1``` et extérieure ; ```curl -v http://serveur```
+* Vérifier le DNS ; ```dig serveur.example.com```
+* Vérifier la validité des certificat TLS/HTTPS ; ```openssl s_client -connect serveur:443```
+* Vérifier le CPU et la RAM ; ```top``` ou ```free -h``` et les disques ```df -h```
+* Tracer les requêtes ; ```tcpdump -i any port 80 or port 443``` pour voir si les requêtes arrivent et/ou repartent
+
+
+## Le Web
+
+* Installer les paquets : serveurs Web ```sudo apt install apache2``` 
