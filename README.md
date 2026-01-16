@@ -136,4 +136,8 @@ Il faudra passer directement par le menu GRUB et modifier temporairement la lign
 
 ## Le Web
 
-* Installer les paquets : serveurs Web ```sudo apt install apache2``` 
+* Quels paquets installez-vous ? : Serveurs Web ```sudo apt install apache2```, PHP ```sudo apt install php libapache2-mod-php php-mysql php-cli```, base de données ```sudo apt install mariadb-server mariadb-client```, outils de monitoring et logs ```sudo apt install awstats goaccess```
+* Comment organisez sous le stockage des différents contenus ? : les racines de sites seront dans le répertoire **/var/www/***, les fichiers de configuration Apache par site dont dans le répertoire **/etc/apache2/sites-available/** et on active les sites ```sudo a2ensite "nom_du_site"``` => ```sudo systemctl reload apache2```
+* Configurer PHP : ```sudo a2enmod php``` => ```sudo systemctl restart apache2```
+* Comment pouvez-vous organiser l'enregistrement séparé des visites des différents sites ? : Apache créé des logs par sites permettant d'analyser chaque site individuellement. Si on veut éviter que les logs grossissent indéfiniment et configurer une rotation des logs on entre la commande ```sudo apt install logrotate```
+* Quel(s) outil(s) peuvent vous permettre de fournir une vison des visites de chaque site à chaque Webmaster ? : on peut utiliser AWStats ```sudo apt install awstats``` => ```sudo awstats_buildstaticpages.pl -config="nom_du_site" -update```, ou GoAccess ```goaccess /var/log/apache2/"nom_du_site".log -o /var/www/"nom_du_site"/report.html --log-format=COMBINED```
